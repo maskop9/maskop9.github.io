@@ -1,6 +1,6 @@
 ---
 title: "Hello, world"
-description: kicking off this site with a quick note on what to expect.
+description: First post on a site I've been meaning to start for a while. A short note on why it exists, what I plan to write here, and the rough cadence to expect. Mostly red team, Windows internals, and exploit dev when I have time to write it up properly.
 date: 2026-05-10 09:00:00 +0545
 categories: [Notes]
 tags: [meta]
