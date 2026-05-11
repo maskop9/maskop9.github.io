@@ -1,0 +1,16 @@
+@use "main";
+
+/* Light mode: make text black */
+html:not([data-mode="dark"]) {
+  --text-color: #000000;
+  --heading-color: #000000;
+  --post-list-text-color: #000000;
+  --link-color: #000000;
+}
+
+html:not([data-mode="dark"]) body,
+html:not([data-mode="dark"]) .post-content,
+html:not([data-mode="dark"]) #post-list,
+html:not([data-mode="dark"]) .content {
+  color: #000000;
+}
