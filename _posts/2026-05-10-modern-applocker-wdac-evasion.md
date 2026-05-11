@@ -1,6 +1,6 @@
 ---
 title: "Modern AppLocker & WDAC Evasion: Trusted Execution, LOLBins, and Real-World Tradecraft"
-description: The post I wish I'd had when I started landing on hardened Windows boxes for the first time. What AppLocker and WDAC actually do under the hood, the techniques that still work in 2026, the ones that are now front-and-center in every EDR, and the corners most write-ups skip, Managed Installer abuse, ISG, supplemental policies, and BYOVD with HVCI in the way. With code, diagrams, and references to how FIN7, Lazarus, BlackByte, and Raspberry Robin actually do it on real engagements.
+description: What AppLocker and WDAC actually do under the hood, the techniques that still work in 2026, the ones that are now front-and-center in every EDR, and the corners most write-ups skip, Managed Installer abuse, ISG, supplemental policies, and BYOVD with HVCI in the way.
 date: 2026-05-10 12:00:00 +0545
 categories: [Research, Red Team]
 tags: [red-team, edr-evasion, windows-internals, malware-dev, pentest, osep]
