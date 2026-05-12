@@ -503,7 +503,10 @@ CLM restricts PowerShell language features, but it does not automatically constr
 For example, WMI and CIM process creation can still launch external processes:
 
 ```powershell
-Invoke-CimMethod -ClassName Win32_Process -MethodName Create `    -Arguments @{        CommandLine = 'cmd /c whoami > C:\Users\Public\proof.txt'    }
+Invoke-CimMethod -ClassName Win32_Process -MethodName Create `
+    -Arguments @{
+        CommandLine = 'cmd /c whoami > C:\Users\Public\proof.txt'
+    }
 ```
 
 The spawned process still inherits UMCI enforcement for whatever binaries it executes, but it does not inherit PowerShell’s language restrictions themselves.
