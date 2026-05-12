@@ -339,7 +339,7 @@ That last point is important: browsers do not run with Managed Installer context
 
 The key implication is that the trust is attached to the file metadata, not validated against the current file contents. If an MI-tagged binary is modified in place, the EA can still indicate that the file originated from SCCM or another trusted deployment system. That behaviour underpins most practical MI abuse scenarios.
 
-The patterns I actually see in real environments are usually:
+The patterns in real environments are usually:
 
 - **Living off pre-tagged binaries**  
     Anything already deployed under locations such as `C:\Windows\CCM\` or `C:\Windows\CCMCache\` may carry Managed Installer trust. If DLL enforcement is weak or absent, DLL sideloading against those binaries becomes interesting because the trusted application itself already satisfies policy requirements.
