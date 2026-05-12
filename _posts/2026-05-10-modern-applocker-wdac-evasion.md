@@ -612,6 +612,7 @@ A few practical engagement notes:
 | BYOVD driver load | New kernel driver load, LOLDrivers hash matches, Code Integrity events | Easy to detect on modern EDR stacks |
 | BYOVD CI tampering | Attempts to modify `CI.dll` structures or kernel protections | Easy on mature EDR-protected systems |
 | PowerShell v2 downgrade | `-Version 2` visible in command line | Very easy to detect |
+
 The pattern across all of these is consistent:
 
 - Older LOLBin execution paths are usually high-confidence detections now.
