@@ -413,7 +413,7 @@ For example, if the base policy accepts supplementals signed under common public
 
 That turns supplemental policies into a policy-extension mechanism rather than a tightly controlled administrative workflow.
 
-In practice, I have seen organizations accidentally create this condition while trying to simplify policy management across development teams or third-party vendors.
+In practice, organizations accidentally create this condition while trying to simplify policy management across development teams or third-party vendors.
 
 If administrative access is available and the signing requirements are weak enough, the workflow looks like:
 
