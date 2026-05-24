@@ -47,7 +47,7 @@ Offensive security specialist (OSCP) with 7+ years across penetration testing, r
 
 ## Certifications
 
-- **OSEP, Offensive Security Experienced Penetration Tester**, *OffSec*, 2026-05
+- **OSEP, Offensive Security Experienced Penetration Tester**, *OffSec*, 2026-05 · Credential ID 183305438
 - **OSCP, OffSec Certified Professional**, *OffSec*, 2024-03 · Credential ID 100121114
 - **eWPTXv2, Web Application Penetration Tester Extreme**, *INE Security*, 2022-11 · Credential ID 7755815
 - **eCXD, Certified Exploit Developer**, *INE Security*, 2022-07 · Credential ID 1444671
