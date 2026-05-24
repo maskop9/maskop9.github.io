@@ -9,34 +9,36 @@ toc: true
   <i class="fas fa-file-pdf"></i> Download PDF version
 </a>
 
+Kathmandu, Nepal · [sameepx2@gmail.com](mailto:sameepx2@gmail.com) · [samipp.com.np](https://samipp.com.np) · [github.com/maskop9](https://github.com/maskop9) · [linkedin.com/in/samip-pokharel](https://www.linkedin.com/in/samip-pokharel)
+
 ## Summary
 
-Offensive security specialist (OSCP) with 7+ years across penetration testing, red team operations, malware development, and exploit research. Hands-on experience scoping and executing full-spectrum engagements, web, network, Active Directory, and adversary emulation, backed by custom tooling in C/C++, Python, and PowerShell. Combines deep technical capability with executive-grade reporting and client-facing communication, delivering assessments across banking, fintech, healthcare, and corporate environments.
+Offensive security specialist with 7+ years of experience across penetration testing, red team operations, exploit development, malware analysis, and adversary emulation. OSCP and OSEP certified, with hands-on experience delivering enterprise assessments, developing custom offensive tooling, and communicating complex attack paths to technical and executive stakeholders. Engagements span banking, fintech, healthcare, government, and corporate environments.
 
 ## Experience
 
 ### Offensive Security Consultant, [StickmanCyber](https://www.stickmancyber.com/)
 *Australia (Remote) · 2024-07 → Present*
 
-- Lead full-scope web and network penetration tests for enterprise clients, scoping, threat modeling, exploitation, post-exploitation, and remediation guidance.
-- Architect and deploy red team infrastructure including C2 servers, redirectors, and phishing pipelines for adversary emulation engagements that mirror real APT operations.
-- Engineer custom loaders and payloads in C/C++ that evade modern EDR and Microsoft Defender, leveraging direct and indirect syscalls (SysWhispers), ETW patching, PPID spoofing, and process injection.
-- Execute end-to-end red team operations covering initial access, lateral movement, privilege escalation, and persistence, emulating threat actor TTPs to validate detection and response capabilities.
-- Author technical and executive deliverables; lead client debriefs translating attack chains and risk impact for both engineering teams and C-suite stakeholders.
+- Led full-scope web, network, and Active Directory penetration tests for enterprise clients, covering scoping, threat modeling, exploitation, post-exploitation, reporting, and executive debriefs.
+- Designed and operated authorised red team infrastructure, including C2 servers, redirectors, payload delivery workflows, and phishing infrastructure for adversary emulation engagements.
+- Developed authorised red team tooling in C/C++ and C#/.NET for endpoint-control validation, including syscall-based execution, ETW-aware tradecraft, PPID spoofing, and process injection techniques.
+- Executed end-to-end adversary emulation engagements (initial access, lateral movement, privilege escalation, persistence) against APT-style scenarios to validate detection and response capabilities.
+- Authored technical and executive deliverables; led client debriefs translating complex attack chains and risk impact for both engineering teams and C-suite stakeholders.
 
 ### Security Analyst II, [Cotiviti](https://www.cotiviti.com/)
 *Kathmandu (Remote) · 2021-08 → 2024-07*
 
-- Performed VAPT and Active Directory security assessments across enterprise environments, identifying critical misconfigurations, kerberoasting paths, and exploitable trust relationships.
+- Performed vulnerability assessments and Active Directory security reviews across enterprise environments, identifying critical misconfigurations, kerberoasting paths, and exploitable trust relationships.
 - Conducted secure code review and triaged Veracode SAST findings, validating exploitability and prioritizing remediation work for development teams.
-- Drove purple team exercises against SOC detections and the enterprise security stack, CrowdStrike, Splunk SIEM, Imperva WAF, ZScaler, Proofpoint, DarkTrace, Digital Guardian DLP, producing actionable detection-tuning guidance.
+- Drove purple team exercises against SOC detections and the enterprise security stack (CrowdStrike, Splunk SIEM, Imperva WAF, ZScaler, Proofpoint, DarkTrace, Digital Guardian DLP), producing actionable detection-tuning guidance.
 - Partnered with the blue team to strengthen SOC playbooks, detection coverage, and incident response workflows.
 
 ### Penetration Tester, [Eminence Ways](https://www.eminenceways.com/)
 *Kathmandu, Nepal · 2018-12 → 2021-07*
 
 - Delivered VAPT engagements for clients in banking, fintech, government, and corporate sectors, covering both web applications and network infrastructure.
-- Led the Research & Development team, driving internal tooling development, offensive-technique research, and capability uplift across the firm.
+- Led offensive security research and development initiatives, building internal tooling, evaluating emerging techniques, and improving team capability across web, network, and exploit-focused assessments.
 - Performed incident response and malware analysis investigations for client environments under tight time constraints.
 - Mentored junior testers and trainees; delivered technical security training programs to government and corporate staff.
 
@@ -57,62 +59,23 @@ Offensive security specialist (OSCP) with 7+ years across penetration testing, r
 
 ## Skills
 
-**Languages & Scripting**
+**Languages & Scripting:** C, C++, C# / .NET, Python, PowerShell, Bash.
 
-- C, C++
-- C# / .NET
-- Python
-- PowerShell
-- Bash
+**Offensive Security:** Web, Network, and Active Directory penetration testing; red team operations and adversary emulation; purple teaming; phishing campaign design.
 
-**Offensive Security**
+**Red Team Tooling & Development:** Custom C# / .NET tooling, PInvoke wrappers, reflective loaders, Cobalt Strike Beacon Object Files (BOFs), Aggressor scripts, payload delivery workflows, post-exploitation modules.
 
-- Web / Network / Active Directory penetration testing
-- Red team operations and adversary emulation
-- Purple teaming
-- Social engineering and phishing campaign design
+**Tradecraft & Evasion:** Direct and indirect syscalls (SysWhispers), process injection, ETW-aware execution, PPID spoofing, AMSI and AppLocker bypass, signed-binary abuse, sleep-mask techniques.
 
-**Custom Tooling & C# Development**
+**Exploit Development & Reverse Engineering:** x86 / x64 reverse engineering, Windows and Linux exploit development (ASLR, DEP/NX, stack cookies, RELRO bypass), shellcoding.
 
-- C# / .NET red team tooling: snippet development, PInvoke wrappers, reflective loaders
-- Custom phishing payloads (HTA, MSBuild, JScript, VBA macros)
-- Cobalt Strike Beacon Object Files (BOFs) and Aggressor scripts
-- Custom command-and-control implants and post-exploitation modules
-- Tradecraft tooling for initial access, lateral movement, and persistence
+**C2 & Adversary Tooling:** Cobalt Strike, Mythic, Sliver, Havoc, Metasploit, Evilginx, Gophish.
 
-**Malware Development & Evasion**
+**Post-Exploitation:** BloodHound, Rubeus, Impacket, NetExec, Evil-WinRM, Responder, mitm6.
 
-- Native Windows API; direct and indirect syscalls (SysWhispers)
-- Process injection (CreateRemoteThread, APC, NtMapViewOfSection, early-bird)
-- ETW patching, AMSI bypass, PPID spoofing, BYOVD EDR killers
-- Antivirus and EDR evasion (signature obfuscation, payload encryption, sleep-mask)
-- PowerShell logging / Constrained Language Mode / AppLocker bypass
+**VAPT Tooling:** Burp Suite Pro, Nmap, Nessus, Acunetix, OpenVAS.
 
-**Exploit Development & Reverse Engineering**
-
-- x86 / x64 reverse engineering and software debugging
-- Windows / Linux exploit development (ASLR, DEP/NX, stack cookies, RELRO bypass)
-- Shellcoding and shellcode injection techniques
-
-**C2 & Adversary Tooling**
-
-- Cobalt Strike, Mythic, Sliver, Havoc, Metasploit
-- Evilginx, Gophish
-
-**Post-Exploitation**
-
-- BloodHound / SharpHound, Mimikatz, Rubeus
-- Impacket, NetExec / CrackMapExec, Evil-WinRM
-- Kerbrute, Responder, mitm6
-
-**VAPT Tooling**
-
-- Burp Suite Pro, Nmap, Nessus, Acunetix, OpenVAS, Nikto, Sublist3r, Shodan
-
-**Security Operations**
-
-- Splunk SIEM, CrowdStrike EDR, Imperva WAF, ZScaler
-- Proofpoint, DarkTrace, Digital Guardian DLP, Veracode
+**Security Operations:** Splunk SIEM, CrowdStrike EDR, Imperva WAF, ZScaler, Proofpoint, DarkTrace, Digital Guardian DLP, Veracode.
 
 ## Honors & Awards
 
