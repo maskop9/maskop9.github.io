@@ -23,10 +23,10 @@ I'm always interested in conversations about red team tradecraft, EDR evasion, W
 
 ## Certifications
 
-- **OSEP** — Offensive Security Experienced Penetration Tester (OffSec, May 2026)
-- **OSCP** — OffSec Certified Professional (OffSec, Mar 2024)
-- **eWPTXv2** — Web Application Penetration Tester Extreme (INE Security, Nov 2022)
-- **eCXD** — Certified Exploit Developer (INE Security, Jul 2022)
-- **CAP** — Certified AppSec Practitioner (The SecOps Group, Jan 2023)
-- **CSA** — Certified SOC Analyst (EC-Council, Apr 2021)
-- **ISO/IEC 27001** — Information Security Associate (SkillFront, May 2021)
+- **OSEP**, Offensive Security Experienced Penetration Tester, OffSec, May 2026
+- **OSCP**, OffSec Certified Professional, OffSec, March 2024
+- **eWPTXv2**, Web Application Penetration Tester Extreme, INE Security, November 2022
+- **eCXD**, Certified Exploit Developer, INE Security, July 2022
+- **CAP**, Certified AppSec Practitioner, The SecOps Group, January 2023
+- **CSA**, Certified SOC Analyst, EC-Council, April 2021
+- **ISO/IEC 27001**, Information Security Associate, SkillFront, May 2021

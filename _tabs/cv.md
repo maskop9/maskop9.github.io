@@ -49,13 +49,13 @@ Offensive security specialist with 7+ years of experience across penetration tes
 
 ## Certifications
 
-- **OSEP, Offensive Security Experienced Penetration Tester**, *OffSec*, 2026-05 · Credential ID 183305438
-- **OSCP, OffSec Certified Professional**, *OffSec*, 2024-03 · Credential ID 100121114
-- **eWPTXv2, Web Application Penetration Tester Extreme**, *INE Security*, 2022-11 · Credential ID 7755815
-- **eCXD, Certified Exploit Developer**, *INE Security*, 2022-07 · Credential ID 1444671
-- **CAP, Certified AppSec Practitioner**, *The SecOps Group*, 2023-01 · Credential ID 6910103
-- **CSA, Certified SOC Analyst**, *EC-Council*, 2021-04 · Credential ID ECC1973260845
-- **ISO/IEC 27001, Information Security Associate**, *SkillFront*, 2021-05 · Credential ID 02781930917511
+- **OSEP**, Offensive Security Experienced Penetration Tester, OffSec, May 2026, Credential ID 183305438
+- **OSCP**, OffSec Certified Professional, OffSec, March 2024, Credential ID 100121114
+- **eWPTXv2**, Web Application Penetration Tester Extreme, INE Security, November 2022, Credential ID 7755815
+- **eCXD**, Certified Exploit Developer, INE Security, July 2022, Credential ID 1444671
+- **CAP**, Certified AppSec Practitioner, The SecOps Group, January 2023, Credential ID 6910103
+- **CSA**, Certified SOC Analyst, EC-Council, April 2021, Credential ID ECC1973260845
+- **ISO/IEC 27001**, Information Security Associate, SkillFront, May 2021, Credential ID 02781930917511
 
 ## Skills
 
