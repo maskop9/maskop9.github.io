@@ -1,6 +1,6 @@
 ---
 title: "Phantom DLL Hijacking: Finding, Proxying, and Detecting Missing DLL Loads"
-description: A practical walkthrough of phantom DLL hijacking, covering DLL search-order analysis, proxy DLL development, detection opportunities, and the automation of proxy DLL generation with [proxydllgenerator](https://github.com/maskop9/proxydllgenerator).
+description: A practical walkthrough of phantom DLL hijacking, covering DLL search-order analysis, proxy DLL development, detection opportunities, and the automation of proxy DLL generation with proxydllgenerator.
 date: 2026-06-02 11:00:00 +0545
 categories: [Research, Red Team]
 tags: [red-team, malware-dev, windows-internals, dll-hijacking, tools]
@@ -17,14 +17,12 @@ mermaid: false
 DLL hijacking is one of those Windows techniques that looks simple from a distance, but the small details matter a lot once you try to make it work reliably.
 
 The first time you read about it, the idea sounds straightforward:
-
 1. Find an application that tries to load a DLL.
 2. Put your own DLL where the application looks first.
 3. Start the application.
 4. Your DLL gets loaded.
 
 That summary is technically true, but it skips the parts that usually break the proof of concept:
-
 - Which DLL is the application trying to load, and how do we confirm that it is actually missing?
 - Where does the application look for that DLL first, and is that location writable by the current user?
 - After the first lookup fails, does the application later load the real DLL from `C:\Windows\System32`?
@@ -80,7 +78,7 @@ A good phantom DLL hijack usually has three conditions:
 That makes it cleaner than overwriting an existing DLL, because we are not breaking or replacing a legitimate file. We are taking advantage of a missing DLL lookup that already exists in the application's normal startup behaviour.
 
 
-## A quick beginner-friendly DLL loading refresher
+## DLL loading refresher
 
 A Windows executable does not normally contain all the code it needs. It imports functions from DLLs. For example, an application may use functions from:
 
@@ -123,19 +121,15 @@ From a Windows security point of view, that matters because `%LOCALAPPDATA%` is 
 
 To be clear, the point of this post is not that OneDrive is "vulnerable" or that every OneDrive installation is exploitable in the same way. The point is that user-profile application directories are common places to find DLL search-order issues, and OneDrive gives a clean example to explain the workflow.
 
-```markdown
 > **Note:** Many applications installed through the Microsoft Store are deployed under user-profile locations, such as `%LOCALAPPDATA%\Packages\` or related per-user application directories. In some cases, these applications may attempt to load DLLs from their own installation or runtime paths before falling back to system locations.
 >
 > If the application checks a user-writable directory for a DLL that does not exist, and the process continues running normally after the lookup fails, it can become a good candidate for phantom DLL hijacking. This is why Microsoft Store and other per-user installed applications are worth reviewing during DLL search-order testing.
-```
-
 
 ## Finding phantom DLL candidates with Procmon
 
 The easiest way to start looking for phantom DLL candidates is with Procmon from Sysinternals.
 
 The filter is simple:
-
 - `Process Name` is `OneDrive.exe`
 - `Path` ends with `.dll`
 - `Result` is `NAME NOT FOUND`
@@ -151,7 +145,6 @@ At this stage, the goal is not to find every missing DLL. Modern Windows applica
 Instead, focus on DLLs that appear to be genuine application or operating system dependencies and are searched for in locations that could realistically be controlled by a user.
 
 When reviewing the Procmon results, I usually look for candidates that meet the following criteria:
-
 1. The DLL appears to be a legitimate Windows DLL or a genuine application dependency.
 2. The application first searches for the DLL in a user-writable location.
 3. After the lookup fails, the application successfully loads the real DLL from a trusted location such as `C:\Windows\System32`.
@@ -180,7 +173,6 @@ That does not prove exploitation yet. It only proves that OneDrive looked there.
 After finding a missing DLL lookup, change the Procmon filter to look for successful loads.
 
 The filter becomes:
-
 - `Process Name` is `OneDrive.exe`
 - `Path` ends with `secur32.dll`
 - `Result` is `SUCCESS`
@@ -201,12 +193,10 @@ That gives us the important loading sequence:
 
 ```text
 %LOCALAPPDATA%\Microsoft\OneDrive\secur32.dll      -> NAME NOT FOUND
-C:\Windows\System32\secur32.dll                   -> SUCCESS
+C:\Windows\System32\secur32.dll                    -> SUCCESS
 ```
 
-That is the primitive.
-
-If a DLL named `secur32.dll` exists in OneDrive's application directory, Windows will find it before the one in `System32`.
+That is the primitive. If a DLL named `secur32.dll` exists in OneDrive's application directory, Windows will find it before the one in `System32`.
 
 ## Why a proxy DLL is needed
 
@@ -215,7 +205,6 @@ At this point, a common beginner mistake is to compile a DLL named `secur32.dll`
 Sometimes the DLL loads, but the application crashes. The reason is simple: the application expected the real `secur32.dll` to export specific functions. If your replacement DLL does not export those functions, the application cannot resolve what it needs. That is where a **proxy DLL** comes in.
 
 A proxy DLL is a DLL that:
-
 1. Uses the same filename as the DLL the application is trying to load.
 2. Exports the same functions as the original DLL.
 3. Loads the real DLL from a trusted full path, such as `C:\Windows\System32\secur32.dll`.
@@ -275,7 +264,6 @@ IDA, Ghidra, CFF Explorer, and PE-bear can also show the export table.
 _Exports shown in IDA. Every named export needs to be handled by the proxy DLL._
 
 The important fields are:
-
 - Export name
 - Export ordinal
 - Architecture
@@ -287,7 +275,7 @@ If the application resolves by name, the names matter. If it resolves by ordinal
 
 ## Building the proxy DLL by hand
 
-I still think it is useful to understand the manual process before using a generator. The reality is that tools fail, applications behave differently, and not every DLL can be proxied in exactly the same way. If you do not understand what is happening under the hood, debugging those issues becomes frustrating very quickly. Building a proxy DLL by hand teaches you how export forwarding works, why ordinals must be preserved, how the Windows loader resolves imports, and why loading the original DLL incorrectly can cause unexpected behaviour.
+I think it is useful to understand the manual process before using a generator. The reality is that tools fail, applications behave differently, and not every DLL can be proxied in exactly the same way. If you do not understand what is happening under the hood, debugging those issues becomes frustrating very quickly. Building a proxy DLL by hand teaches you how export forwarding works, why ordinals must be preserved, how the Windows loader resolves imports, and why loading the original DLL incorrectly can cause unexpected behaviour.
 
 Once you understand those fundamentals, using a generator becomes a convenience rather than a dependency. So before introducing [`proxydllgenerator`](https://github.com/maskop9/proxydllgenerator), let's build a proxy DLL manually and see what is actually required to make a phantom DLL hijack work reliably.
 
@@ -313,14 +301,13 @@ EXPORTS
     AcquireCredentialsHandleW @3
 ```
 
-In a real proxy, this list must contain all the relevant exports from the original DLL. This is one of the places where mistakes happen. If you miss an export, the application may crash. If you assign the wrong ordinal, the application may call the wrong function.
+In a proxy, this list must contain all the relevant exports from the original DLL. This is one of the places where mistakes happen. If you miss an export, the application may crash. If you assign the wrong ordinal, the application may call the wrong function.
 
 ### The DllMain logic
 
 `DllMain` is the DLL entry point. Windows calls it when the DLL is loaded or unloaded.
 
 For this proxy, the important steps are:
-
 1. Detect `DLL_PROCESS_ATTACH`.
 2. Build the full path to the real DLL inside `System32`.
 3. Load the real DLL using that full path.
@@ -369,13 +356,13 @@ BOOL WINAPI DllMain(HINSTANCE hinst, DWORD reason, LPVOID reserved)
 
 There are two important points here.
 
-First, the proxy loads the original DLL using a full `System32` path. Do not call this from inside your proxy:
+First, the proxy loads the original DLL using a full `System32` path. Never call this from inside your proxy:
 
 ```c
 LoadLibraryA("secur32.dll");
 ```
 
-That asks Windows to search again. Since your proxy DLL is already sitting in the earlier search directory, you can end up resolving back to yourself instead of the real DLL.
+This asks Windows to search again. Since your proxy DLL is already sitting in the earlier search directory, you can end up resolving back to yourself instead of the real DLL.
 
 Second, keep `DllMain` small. Windows calls `DllMain` while the loader lock is held. Doing too much inside it can create deadlocks and unstable behaviour.
 
@@ -395,7 +382,7 @@ At runtime, `proxy_fns` contains the addresses of the real functions inside `C:\
 
 Conceptually, each stub looks like this:
 
-```asm
+```text
 AcceptSecurityContext:
     jmp proxy_fns[0]
 
@@ -408,7 +395,7 @@ AcquireCredentialsHandleW:
 
 The actual x64 assembly generated for this is slightly more verbose:
 
-```asm
+```text
 .extern proxy_fns
 
 .text
@@ -448,7 +435,7 @@ proxy_fns
 
 When the first stub executes:
 
-```asm
+```text
 jmpq *proxy_fns(%rip)
 ```
 
@@ -456,7 +443,7 @@ it jumps to the address stored in `proxy_fns[0]`.
 
 When the second stub executes:
 
-```asm
+```text
 jmpq *proxy_fns+8(%rip)
 ```
 
@@ -464,7 +451,7 @@ it jumps to the address stored in `proxy_fns[1]`.
 
 Likewise:
 
-```asm
+```text
 jmpq *proxy_fns+16(%rip)
 ```
 
@@ -513,7 +500,6 @@ The `--kill-at` option matters for x86 because exported stdcall symbols can othe
 Building a proxy DLL is not particularly difficult, but there are a lot of small details that can cause problems if they are overlooked.
 
 Some common mistakes include:
-
 - Missing an export that the application expects to call.
 - Preserving the export name but assigning the wrong ordinal.
 - Building an x64 proxy DLL for an x86 process, or vice versa.
@@ -526,20 +512,18 @@ None of these issues are particularly difficult to fix, but they become tedious 
 
 Building a proxy DLL manually is a useful exercise because it helps you understand how export forwarding works. After doing it a few times, however, the process becomes repetitive. This is exactly the problem that [`proxydllgenerator`](https://github.com/maskop9/proxydllgenerator) is designed to solve.
 
-## Introducing [proxydllgenerator](https://github.com/maskop9/proxydllgenerator)
+## Introducing proxydllgenerator
 
 This is the reason I built [**proxydllgenerator**](https://github.com/maskop9/proxydllgenerator).
 
 It is a Python tool that automates proxy DLL generation for DLL hijacking labs and authorized red-team testing.
 
 At a high level, the tool takes:
-
 - A target DLL to proxy
 - A raw shellcode payload
 - Optional build settings
 
 Then it generates and compiles a replacement DLL that:
-
 - Exports the named functions from the original DLL
 - Loads the real DLL from `System32` at runtime
 - Forwards export calls through generated assembly JMP stubs
@@ -550,13 +534,13 @@ Then it generates and compiles a replacement DLL that:
 The basic usage is:
 
 ```bash
-python proxydll.py -dll secur32.dll -shellcode payload.bin
+python3 proxydll.py -dll secur32.dll -shellcode payload.bin
 ```
 
 With automatic AES encryption:
 
 ```bash
-python proxydll.py -dll secur32.dll -shellcode payload.bin --encrypt
+python3 proxydll.py -dll secur32.dll -shellcode payload.bin --encrypt
 ```
 
 ![proxydllgenerator running with AES encryption against secur32.dll](/assets/img/posts/phantom-dll-hijacking/proxydllgenerator-run.png)
@@ -597,7 +581,7 @@ output/_sources/
     └── ...
 ```
 
-## What [proxydllgenerator](https://github.com/maskop9/proxydllgenerator) automates
+## What proxydllgenerator automates
 
 [`proxydllgenerator`](https://github.com/maskop9/proxydllgenerator) does not introduce any new DLL hijacking techniques. It's purpose is to automate the repetitive parts of building a proxy DLL. Given a target DLL, it parses the export table, generates the required `.def` file, creates the assembly stubs used for export forwarding, generates the `dllmain.c` boilerplate needed to load the original DLL from `System32`, and compiles the final proxy DLL using MinGW-w64. 
 
@@ -632,7 +616,6 @@ _The proxy DLL placed in OneDrive's user-writable application directory._
 Then restart OneDrive.
 
 The expected flow is:
-
 1. OneDrive starts.
 2. The Windows loader checks the OneDrive application directory.
 3. It finds `secur32.dll`.
@@ -641,7 +624,7 @@ The expected flow is:
 6. The proxy resolves exports and forwards calls.
 7. The lab payload confirms execution.
 
-For this post, I used a simple MessageBox payload because it is visible and easy to validate in screenshots. There is no need to use a real implant to prove the loading primitive.
+For this post, I used a simple MessageBox payload because it is visible and easy to validate in screenshots.
 
 ![MessageBox spawned from inside onedrive.exe](/assets/img/posts/phantom-dll-hijacking/shellcode-executed.png)
 _MessageBox confirming that code executed inside the OneDrive process._
@@ -663,7 +646,6 @@ For example, AppLocker environments often have publisher rules for signed execut
 WDAC can provide stronger control, but DLL enforcement is not always enabled because it requires testing and can break applications that load unsigned helper DLLs.
 
 That creates a gap:
-
 - The signed executable is allowed.
 - The application directory is writable.
 - DLL loading is not strictly controlled.
@@ -682,7 +664,6 @@ The detection logic I would focus on is simple:
 Looking at any one of these indicators in isolation tends to generate noise. Applications legitimately load DLLs from user-writable locations, and some vendors still ship unsigned DLLs. However, when a DLL appears shortly before a process starts and is then loaded by a trusted application, the event becomes much more interesting.
 
 The key attributes I would look for are:
-
 - The DLL was created or modified shortly before the load event.
 - The DLL is unsigned or signed by an unexpected publisher.
 - The DLL is loaded by a trusted or signed application.
@@ -700,7 +681,6 @@ Defending against phantom DLL hijacking is ultimately about reducing the opportu
 The most effective mitigation is to eliminate unsafe DLL search-order behaviour during development.
 
 Developers should:
-
 - Load known DLLs using full paths where practical.
 - Use `LoadLibraryEx` with appropriate `LOAD_LIBRARY_SEARCH_*` flags.
 - Configure safer DLL search paths using `SetDefaultDllDirectories`.
@@ -712,7 +692,6 @@ Developers should:
 Where operationally feasible, organisations should restrict which DLLs are allowed to load into trusted processes.
 
 Some options include:
-
 - Enforcing DLL policies through WDAC.
 - Using AppLocker DLL rules for high-value systems.
 - Restricting unsigned DLL loads from user-writable directories.
@@ -725,7 +704,6 @@ Like most application control measures, DLL enforcement should be tested careful
 Even when prevention controls are not available, DLL hijacking attempts can often be detected through module load telemetry.
 
 Particular attention should be paid to:
-
 - Signed applications loading DLLs from user-writable locations.
 - Recently created or modified DLLs being loaded shortly after they appear on disk.
 - Unsigned DLLs loaded into trusted processes.
@@ -766,4 +744,5 @@ Build one proxy by hand so you understand what is happening. After that, automat
 - Microsoft Defender XDR, **DeviceImageLoadEvents table**  
   `https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-deviceimageloadevents-table`
 
-- [proxydllgenerator](https://github.com/maskop9/proxydllgenerator)
+- **proxydllgenerator**
+  `https://github.com/maskop9/proxydllgenerator`
