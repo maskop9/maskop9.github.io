@@ -4,7 +4,7 @@ description: A practical walkthrough of phantom DLL hijacking, covering DLL sear
 date: 2026-06-02 11:00:00 +0545
 categories: [Research, Red Team]
 tags: [red-team, malware-dev, windows-internals, dll-hijacking, tools]
-pin: false
+pin: true
 toc: true
 mermaid: false
 ---
@@ -580,12 +580,6 @@ output/_sources/
 └── x86/
     └── ...
 ```
-
-## What proxydllgenerator automates
-
-[`proxydllgenerator`](https://github.com/maskop9/proxydllgenerator) does not introduce any new DLL hijacking techniques. It's purpose is to automate the repetitive parts of building a proxy DLL. Given a target DLL, it parses the export table, generates the required `.def` file, creates the assembly stubs used for export forwarding, generates the `dllmain.c` boilerplate needed to load the original DLL from `System32`, and compiles the final proxy DLL using MinGW-w64. 
-
-It can also optionally AES encrypt an embedded shellcode payload and generate the corresponding BCrypt decryption routine. The goal is simply to avoid storing raw shellcode bytes directly in the compiled artifact and to remove the repetitive work involved in building proxy DLLs by hand.
 
 ## Running the OneDrive lab
 
