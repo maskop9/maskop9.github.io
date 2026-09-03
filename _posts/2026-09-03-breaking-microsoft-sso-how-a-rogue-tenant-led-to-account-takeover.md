@@ -443,9 +443,6 @@ Affected Vikunja `1.0.0` through `2.3.0` (fixed in `2.4.0`). When the OIDC `emai
 
 Same story told twice: *a valid signature (or a successful SSO login) was mistaken for a verified identity.* If your project consumes Microsoft or any OIDC tokens, run the three-question checklist above against your own code, and add a fourth: **does the provider say this email is verified, and do you actually check that flag?**
 
-> One Microsoft-specific gotcha worth calling out: **Entra ID (Azure AD) does not issue a standard `email_verified` claim by default**, the way Google or Okta do. So "just check `email_verified`" is not advice you can follow verbatim here, there is often no such boolean in the token. Instead, Entra exposes the optional `xms_edov` ("email domain owner verified") claim, and the robust approach is to require it (treating an absent claim as *unverified*) or to gate account linking on verified domain ownership. If you go looking for a native `email_verified` in a Microsoft token and don't find one, that's expected, not a sign you're looking in the wrong place.
-{: .prompt-info }
-
 ## References
 
 - [Microsoft identity platform ID tokens](https://learn.microsoft.com/en-us/entra/identity-platform/id-tokens)
