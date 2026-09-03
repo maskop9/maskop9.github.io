@@ -14,7 +14,7 @@ pin: true
 
 Before we get into the details, take a look at this simplified version of the “Sign in with Microsoft” implementation I was reviewing. Read through it and see if you can spot the problem.
 
-Take your time. The code works exactly as intended from a developer’s perspective, and people use this login flow every day.
+Take your time. The code *works* exactly as intended from a developer’s perspective, and people use this login flow every day.
 
 ```go
 // This runs when the browser comes back from Microsoft with a token.
@@ -58,11 +58,11 @@ Think you’ve found it? Here’s the question that gives away the important par
 > The signature check proves that Microsoft signed the token. But does it prove that the token was actually issued for this application? And does it prove that the person using the token is the user identified by the email claim?
 {: .prompt-tip }
 
-The answer to both questions is no.
+The answer to both questions is **no**.
 
-The application is verifying that the token is genuinely signed by Microsoft, but it is not verifying the security properties that determine where that token is intended to be used or whether the identity claim can safely be trusted for account identification.
+The application is verifying that the token is genuinely signed by Microsoft, but it is **not** verifying the security properties that determine *where that token is intended to be used* or *whether the identity claim can safely be trusted* for account identification.
 
-That distinction is the heart of the vulnerability and in this case, it was enough to turn a seemingly legitimate Microsoft SSO flow into a full account takeover.
+That distinction is the heart of the vulnerability, and in this case it was enough to turn a seemingly legitimate Microsoft SSO flow into a **full account takeover**.
 
 Let’s walk through how I identified the issue, why the validation was insufficient, and how to reproduce it.
 
@@ -76,13 +76,13 @@ If you test a “Sign in with Microsoft” flow purely from the outside, you can
 
 But the most important question is happening behind the scenes:
 
-What exactly does the server validate before trusting the token and creating a session?
+> *What exactly does the server validate before trusting the token and creating a session?*
 
-From the browser, you generally cannot see that decision making process. A properly implemented authentication flow and a dangerously flawed one can look almost identical from the outside. Both can redirect to Microsoft, return with a valid-looking token, and successfully log you in.
+From the browser, you generally cannot see that decision-making process. A properly implemented authentication flow and a dangerously flawed one can look **almost identical from the outside**. Both can redirect to Microsoft, return with a valid-looking token, and successfully log you in.
 
-The difference is in the server-side validation.
+The difference is entirely in the **server-side validation**.
 
-That is why I went straight to the authentication code. Rather than trying to infer what the application should be checking, I could see exactly what it was and, more importantly, what it wasn't.
+That is why I went straight to the authentication code. Rather than trying to infer what the application *should* be checking, I could see exactly what it was checking and, more importantly, *what it wasn't*.
 
 ## A 60-second primer on how "Sign in with Microsoft" works
 
@@ -130,11 +130,11 @@ rg -n '"(aud|iss|tid|sub|oid|email|preferred_username|nonce)"' --type go
 ```
 {: file="the searches I ran" }
 
-That last search was the key. In a properly implemented SSO flow, I would expect to see the application explicitly validating claims such as aud, iss, and tid against known, expected values before trusting the token.
+That last search was the key. In a properly implemented SSO flow, I would expect to see the application explicitly validating claims such as `aud`, `iss`, and `tid` against known, expected values before trusting the token.
 
-Here, aud and tid were nowhere in the login path at all. Meanwhile, email appeared throughout the authentication logic.
+Here, `aud` and `tid` were **nowhere in the login path at all**. Meanwhile, `email` appeared throughout the authentication logic.
 
-The search results led directly to processSSO in /api/src/sso.go, the same function we looked at earlier.
+The search results led directly to `processSSO` in `/api/src/sso.go`, the same function we looked at earlier.
 
 ## Step 2: Understanding why it's broken
 
@@ -180,13 +180,13 @@ func processSSO(w http.ResponseWriter, r *http.Request) {
 ```
 {: file="/api/src/sso.go: the bug, annotated" }
 
-In one sentence: the application verifies that Microsoft signed the token, but never verifies that the token was intended for this application or issued for a trusted organisation, and then uses an email address that the attacker can control to determine who they are.
+In one sentence: the application verifies that Microsoft **signed** the token, but **never** verifies that the token was *intended for this application* or *issued by a trusted organisation*, and then uses an email address that the attacker can control to decide who they are.
 
 ## Step 3: The second bug that removed the last hurdle
 
-There was one thing still in my way: the nonce. To forge a valid login, I needed a token containing a nonce that the application was expecting.
+There was one thing still in my way: the `nonce`. To forge a valid login, I needed a token containing a `nonce` that the application was expecting.
 
-So I searched for other places where nonce was used and found this on an unauthenticated endpoint:
+So I searched for other places where `nonce` was used, and found this on an **unauthenticated** endpoint:
 
 ```go
 // /api/src/sessions.refresh.go
@@ -204,11 +204,11 @@ func validateAccountName(w http.ResponseWriter, r *http.Request) {
 ```
 {: file="/api/src/sessions.refresh.go: the leak" }
 
-This was almost certainly leftover development code. In production, however, it had a much more serious consequence. I could simply ask the application for a fresh nonce and then use that value when constructing my forged token.
+This was almost certainly leftover development code. In production, however, it had a much more serious consequence: I could simply **ask the application for a fresh `nonce`** and then use that value when constructing my forged token.
 
-There was another way to obtain the same value. Because the nonce was part of the SSO login flow, it was also possible to intercept the redirect to Microsoft, capture the required nonce from the request, and then drop the request instead of completing the login flow. This meant I did not necessarily need to rely on the exposed endpoint to obtain a valid nonce.
+There was another way to obtain the same value. Because the `nonce` was part of the SSO login flow, it was also possible to intercept the redirect to Microsoft, capture the required `nonce` from the request, and then *drop the request* instead of completing the login. This meant I did not even need to rely on the exposed endpoint to obtain a valid `nonce`.
 
-Either way, the application's one meaningful defence against replay was no longer a meaningful defence. The application was effectively handing out the value I needed to satisfy its own nonce check.
+Either way, the application's one meaningful defence against replay *was no longer a defence at all*. It was effectively handing out the exact value I needed to satisfy its own `nonce` check.
 
 ## Step 4: The exploit, start to finish
 
@@ -255,7 +255,7 @@ Sign-in name : poc@attacker-tenant.onmicrosoft.com   # your real login
 Email        : admin@targetcorp.example              # the victim's email
 ```
 
-That's the trick, right there. Microsoft lets you, the tenant admin, put any email you like on your own users. The target app trusts that email blindly.
+That's the trick, right there. Microsoft lets you, the tenant admin, put *any email you like* on your own users. The target app trusts that email **blindly**.
 
 ### 4.3: Steal a nonce from the app
 
@@ -298,16 +298,27 @@ If you decode that token (paste it into any JWT decoder), you'll see the problem
 
 ```json
 {
-  "aud": "11111111-2222-3333-4444-555555555555",                        // MY app, not theirs
-  "iss": "https://login.microsoftonline.com/aaaaaaaa-.../v2.0",         // MY tenant
-  "tid": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",                        // MY tenant
-  "email": "admin@targetcorp.example",                                 // the VICTIM (I set this)
-  "preferred_username": "poc@attacker-tenant.onmicrosoft.com",         // actually me
-  "nonce": "00112233445566778899aabbccddeeff"                          // stolen from the app
+  "aud": "11111111-2222-3333-4444-555555555555",
+  "iss": "https://login.microsoftonline.com/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/v2.0",
+  "tid": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
+  "email": "admin@targetcorp.example",
+  "preferred_username": "poc@attacker-tenant.onmicrosoft.com",
+  "nonce": "00112233445566778899aabbccddeeff"
 }
 ```
 
-Everything screams "attacker" except the one field the app decided to trust.
+Now look at where each claim actually points:
+
+| Claim | What it says | Whose is it, really? |
+|---|---|---|
+| `aud` | my app registration's client ID | **Mine** (not the target app) |
+| `iss` | issued by my tenant's endpoint | **Mine** |
+| `tid` | my rogue tenant | **Mine** |
+| `email` | `admin@targetcorp.example` | The **victim's**, a value *I typed in by hand* |
+| `preferred_username` | `poc@attacker-tenant.onmicrosoft.com` | **Me**, my actual account |
+| `nonce` | matches the app's expected value | **Stolen from the app** in the previous step |
+
+Every single claim *screams attacker*, except the one field the app decided to trust: `email`.
 
 ### 4.5: Send the token to the app and become the victim
 
@@ -328,7 +339,7 @@ HTTP/2 302 Found
 Location: https://app.example.app/sso/callback?t=eyJhbGciOiJIUzI1NiI...
 ```
 
-Open that `Location` URL in a private window and you're staring at the victim's dashboard, fully logged in. In this engagement the victim was the **tenant administrator**, so this was game over: every document, every user, every setting in the platform.
+Open that `Location` URL in a private window and you're staring at the victim's dashboard, *fully logged in*. In this engagement the victim was the **tenant administrator**, so this was **game over**: every document, every user, every setting in the platform.
 
 **No password. No phishing. No action from the victim.** CVSS 3.1 rated it **10.0 Critical** (`AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:H/A:H`), CWE-290 Authentication Bypass by Spoofing.
 
