@@ -1,13 +1,13 @@
 ---
 title: "Breaking Microsoft SSO: How a Rogue Tenant Led to Account Takeover"
-date: 2026-08-13 14:30:00 +0545
+date: 2026-09-03 14:30:00 +0545
 categories: [Application Security, Authentication]
 tags: [oidc, oauth2, sso, azure, entra-id, jwt, code-review, go, account-takeover]
 description: A single missing check in a Go SSO handler let me log in as anyone on the platform, including the admin, without a password. Here's how a source code review found it, and how you can reproduce it step by step.
 math: false
 mermaid: true
 toc: true
-pin: false
+pin: true
 ---
 
 ## Spot the flaw first
@@ -412,7 +412,7 @@ A valid signature only tells you a token is *real*. It says nothing about whethe
 
 ## This wasn't a one-off
 
-After this engagement I compared notes with [Sujal Tuladhar (evilgensec)](https://github.com/evilgensec), and we realised the pattern was almost certainly not unique to one application. So Sujal went looking, and found the exact same class of flaw in widely used open-source projects, reporting it and getting it fixed in each.
+After this engagement I compared notes with [Sujal Tuladhar](https://sujaltuladhar.com.np/) ([evilgensec](https://github.com/evilgensec)), and we realised the pattern was almost certainly not unique to one application. So Sujal went looking, and found the exact same class of flaw in widely used open-source projects, reporting it and getting it fixed in each.
 
 The common thread is precisely what you just read: an SSO login linked to a local account by a **controllable email claim**, without the application confirming the identity provider had actually *verified* that email. With a default multi-tenant Microsoft setup, any attacker who can spin up their own tenant can set their email to a victim's and walk in.
 
