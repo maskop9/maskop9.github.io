@@ -1,6 +1,6 @@
 ---
 title: "Breaking Microsoft SSO: How a Rogue Tenant Led to Account Takeover"
-date: 2026-09-03 14:30:00 +0545
+date: 2026-09-03 09:00:00 +0545
 categories: [Application Security, Authentication]
 tags: [oidc, oauth2, sso, azure, entra-id, jwt, code-review, go, account-takeover]
 description: A single missing check in a Go SSO handler let me log in as anyone on the platform, including the admin, without a password. Here's how a source code review found it, and how you can reproduce it step by step.
