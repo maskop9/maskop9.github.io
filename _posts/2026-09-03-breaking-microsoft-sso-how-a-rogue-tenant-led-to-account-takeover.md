@@ -122,7 +122,8 @@ That boundary is often where authentication bugs hide. In a Go codebase, I can u
 rg -n 'jwt\.(Parse|ParseWithClaims|Decode)' --type go
 
 # Where does it get the keys to check signatures?
-# ("common" is a big red flag, more on that below)
+# (seeing "/common" is normal for multi-tenant apps; it's a cue
+#  to check that aud/tid are validated downstream, not a bug itself)
 rg -n 'jwks|/common/|openid-configuration' --type go
 
 # Which claims does it actually look at?
@@ -181,6 +182,9 @@ func processSSO(w http.ResponseWriter, r *http.Request) {
 {: file="/api/src/sso.go: the bug, annotated" }
 
 In one sentence: the application verifies that Microsoft **signed** the token, but **never** verifies that the token was *intended for this application* or *issued by a trusted organisation*, and then uses an email address that the attacker can control to decide who they are.
+
+> To be clear, fetching keys from the `/common` JWKS endpoint is **not** the bug. Using the common key set to verify signatures is completely standard for any application that accepts logins from more than one Microsoft tenant. The flaw is entirely **downstream**: after the signature checks out, the code fails to validate `aud` (is this token for us?) and `tid` (is this a tenant we trust?). Verifying with `/common` and then not checking `aud`/`tid` is exactly what turns "signed by Microsoft" into "signed by *anyone* with a Microsoft account".
+{: .prompt-info }
 
 ## Step 3: The second bug that removed the last hurdle
 
@@ -406,7 +410,7 @@ func processSSO(w http.ResponseWriter, r *http.Request) {
 
 Two things to take away:
 
-- **The tenant allowlist is the real fix.** If your app serves one company, use that company's specific login URL instead of `common` and reject everything else. If it serves many, "which companies do we trust" has to be a deliberate list in your database, not "anyone with a Microsoft account."
+- **The tenant allowlist is the real fix.** If your app serves a single company, use that company's tenant-specific authority (`login.microsoftonline.com/{tid}/v2.0`) so the issuer is pinned to one tenant. If it serves many, keep verifying signatures against `/common` (that part is fine) but treat "which companies do we trust" as a **deliberate list in your database**, checked on every login, not "anyone with a Microsoft account."
 - **Identify people by `tid` + `oid`, never by `email`.** Those two together are permanent and can't be faked by a tenant admin. If you need to invite users by email, match the email **once** when they accept the invite, then lock the account to their `tid` + `oid` forever after.
 
 And don't forget the smaller bug: **stop returning `nonce` and `state` from that unauthenticated endpoint.** They're one-time secrets; handing them out defeats their entire purpose.
@@ -439,11 +443,15 @@ Affected Vikunja `1.0.0` through `2.3.0` (fixed in `2.4.0`). When the OIDC `emai
 
 Same story told twice: *a valid signature (or a successful SSO login) was mistaken for a verified identity.* If your project consumes Microsoft or any OIDC tokens, run the three-question checklist above against your own code, and add a fourth: **does the provider say this email is verified, and do you actually check that flag?**
 
+> One Microsoft-specific gotcha worth calling out: **Entra ID (Azure AD) does not issue a standard `email_verified` claim by default**, the way Google or Okta do. So "just check `email_verified`" is not advice you can follow verbatim here, there is often no such boolean in the token. Instead, Entra exposes the optional `xms_edov` ("email domain owner verified") claim, and the robust approach is to require it (treating an absent claim as *unverified*) or to gate account linking on verified domain ownership. If you go looking for a native `email_verified` in a Microsoft token and don't find one, that's expected, not a sign you're looking in the wrong place.
+{: .prompt-info }
+
 ## References
 
 - [Microsoft identity platform ID tokens](https://learn.microsoft.com/en-us/entra/identity-platform/id-tokens)
 - [Validate claims in tokens](https://learn.microsoft.com/en-us/entra/identity-platform/claims-validation)
 - [OpenID Connect on the Microsoft identity platform](https://learn.microsoft.com/en-us/entra/identity-platform/v2-protocols-oidc)
+- [Optional claims (including `xms_edov`)](https://learn.microsoft.com/en-us/entra/identity-platform/optional-claims-reference)
 - [CWE-290: Authentication Bypass by Spoofing](https://cwe.mitre.org/data/definitions/290.html)
 - [evilgensec (Sujal Tuladhar) on GitHub](https://github.com/evilgensec)
 - [Zammad advisory GHSA-86cc-3ggh-mf2m (CVE-2026-84458)](https://github.com/zammad/zammad/security/advisories/GHSA-86cc-3ggh-mf2m)
